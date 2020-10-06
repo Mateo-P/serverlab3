@@ -3,7 +3,7 @@ from os import path
 
 
 def create_logger(address):
-    log_name = str(time.time()) + '_' + address[0] + '_' + str(address[1])
+    log_name = str(time.time()) + '---' + address[0] + '---#' + str(address[1])
     absolute_path = path.dirname(path.abspath(__file__))
     log_address = path.join(absolute_path, 'logs')
     log = open(path.join(log_address, log_name), 'w')

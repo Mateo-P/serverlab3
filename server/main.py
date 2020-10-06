@@ -40,9 +40,11 @@ def run_server():
 
 
 def connect(connection, addr):
+
+    logger = create_logger(addr)
+    start_time = time.time()
+
     try:
-        start_time = time.time()
-        logger = create_logger(addr)
 
         received_message = connection.recv(255).decode()
         print("RECEIVED: " + received_message + "\n")
@@ -137,28 +139,26 @@ def at_exit_cleanup():
 
 try:
 
-    client_quantity = int(
-        input('INGRESAR EL NUMERO MAXIMO DE CLIENTES: '))
-    files = [f for f in listdir(
-        files_address) if path.isfile(path.join(files_address, f))]
+    client_quantity = int(input('INGRESAR EL NUMERO MAXIMO DE CLIENTES: '))
+    files = [f for f in listdir(files_address) if path.isfile(path.join(files_address, f))]
+
     print("ARCHIVOS DISPONIBLES PARA ENVIAR:")
-    write_log("ARCHIVOS DISPONIBLES PARA ENVIAR: \n")
 
     for i in range(len(files)):
         print("#" + str(i) + ": " + files[i])
-        write_log("#" + str(i) + ": " + files[i] + "\n")
-    file_name = files[int(
-        input('INGRESAR EL NUMERO DE ARCHIVO: '))]
+
+    file_name = files[int(input('INGRESAR EL NUMERO DE ARCHIVO: '))]
     file_address = path.join(files_address, file_name)
     file_size = path.getsize(file_address)
+
     print("TAMANO DEL ARCHIVO: " + str(file_size))
-    write_log("TAMANO DEL ARCHIVO: " + str(file_size) + "\n")
 
     # HMAC VERIFICATION
     hash_md5 = hashlib.md5()
     with open(file_address, "rb") as file:
         for chunk in iter(lambda: file.read(4096), b""):
             hash_md5.update(chunk)
+
     file.close()
 
     hmac = hash_md5.digest()
@@ -166,7 +166,6 @@ try:
 except Exception as e:
     connection_socket.close()
     print("ERROR AL CARGAR ARCHIVO")
-    write_log("ERROR AL CARGAR ARCHIVO \n")
 
 run_server()
 connection_socket.close()
