@@ -1,0 +1,4 @@
+CONNECTED SUCCESFULLY TO ADDRESS ('127.0.0.1', 50278) 
+SENDING FILE 
+FINISHEDSEND: HMAC VERIFICATION 
+ERROR'utf-8' codec can't decode byte 0xa9 in position 15: invalid start byte
