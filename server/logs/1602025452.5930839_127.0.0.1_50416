@@ -1,0 +1,4 @@
+CONNECTED SUCCESFULLY TO ADDRESS ('127.0.0.1', 50416) 
+FILE SENT 
+FINISHEDSEND: HMAC VERIFICATION 
+ERROR'utf-8' codec can't decode byte 0xeb in position 18: invalid continuation byte
