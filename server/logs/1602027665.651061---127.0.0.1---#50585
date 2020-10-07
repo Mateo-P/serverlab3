@@ -1,6 +1,0 @@
-RECEIVED: CONNECTED
-RECEIVED: CONNECTED SUCCESFULLY TO ADDRESS ('127.0.0.1', 50585) 
-
-SEND: example.txt (file name) 
-FILE OPENED 
-SEND: file size encoded 

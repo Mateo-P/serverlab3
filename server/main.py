@@ -10,17 +10,19 @@ import atexit
 PORT = 40001
 HOST = "0.0.0.0"
 ADDRESS_TUPLE = (HOST, PORT)
+CLIENT_QNTY = 25
 
 
 def run_server():
-    connection_socket.listen(25)
+    connection_socket.listen(CLIENT_QNTY)
 
     print(f"LISTENING ON HOST: {HOST}")
 
     while True:
         connection, addr = connection_socket.accept()
         connection_socket.setblocking(1)
-        connection_thread = threading.Thread(target=connect, args=(connection, addr))
+        connection_thread = threading.Thread(
+            target=connect, args=(connection, addr))
 
         threads = [connection_thread]
         connection_thread.start()
@@ -53,11 +55,12 @@ def connect(connection, addr):
 
         if received_message == "CONNECTED":
             thread.connected = True
-            connection_message = 'CONNECTED SUCCESFULLY TO ADDRESS {} \n'.format(addr)
+            connection_message = 'CONNECTED SUCCESFULLY TO ADDRESS {} \n'.format(
+                addr)
             print("RECEIVED: " + connection_message + "\n")
             write_log(logger, "RECEIVED: " + connection_message + "\n")
 
-            #while getattr(t, 'send', True):
+            # while getattr(t, 'send', True):
             #    continue
 
             print("SEND: " + file_name + " (file name) \n")
@@ -97,8 +100,8 @@ def connect(connection, addr):
 
                 received_message = connection.recv(255).decode()
 
-                #the incoming message might be "INTEGRITY VERIFIED" or "INTEGRITY ERROR"
-                #depending on the result of the hash digest
+                # the incoming message might be "INTEGRITY VERIFIED" or "INTEGRITY ERROR"
+                # depending on the result of the hash digest
 
                 print("RECEIVED: " + received_message + "\n")
                 write_log(logger, "RECEIVED: " + received_message + "\n")
@@ -139,19 +142,20 @@ def at_exit_cleanup():
 
 try:
 
-    client_quantity = int(input('INGRESAR EL NUMERO MAXIMO DE CLIENTES: '))
-    files = [f for f in listdir(files_address) if path.isfile(path.join(files_address, f))]
+    client_quantity = CLIENT_QNTY
+    files = [f for f in listdir(files_address) if path.isfile(
+        path.join(files_address, f))]
 
     print("ARCHIVOS DISPONIBLES PARA ENVIAR:")
 
     for i in range(len(files)):
-        print("#" + str(i) + ": " + files[i])
+        print("# " + str(i) + "-> " + files[i])
 
     file_name = files[int(input('INGRESAR EL NUMERO DE ARCHIVO: '))]
     file_address = path.join(files_address, file_name)
     file_size = path.getsize(file_address)
 
-    print("TAMANO DEL ARCHIVO: " + str(file_size))
+    print("TAMANO DEL ARCHIVO: " + str(file_size)+" B")
 
     # HMAC VERIFICATION
     hash_md5 = hashlib.md5()
