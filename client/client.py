@@ -1,4 +1,5 @@
 import hashlib
+import math
 import struct
 import socket
 import time
@@ -8,6 +9,12 @@ import atexit
 PORT = 40001
 SERVER = "127.0.0.1"
 ADDRESS_TUPLE = (SERVER, PORT)
+BUFFER_SIZE = 1024
+
+
+def roundup(x):
+    return int(math.ceil(x / 10.0)) * 10
+
 
 connection_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connection_socket.connect(ADDRESS_TUPLE)
@@ -27,25 +34,36 @@ try:
     file_size = int(struct.unpack('i', connection_socket.recv(4))[0])
     print("RECEIVED: " + str(file_size) + " (file size)")
     processed_quantity = 0
+    processing_percentage = 0
+    last_processing_percentage = 0
+    total_packages = 0
 
     while processed_quantity < file_size:
-        data = connection_socket.recv(1024)
+        data = connection_socket.recv(BUFFER_SIZE)
         processed_quantity += len(data)
-        print("PROCESSED QUANTITY: " + str(processed_quantity))
+        processing_percentage = roundup((processed_quantity / file_size) * 100)
+
+        if processing_percentage != last_processing_percentage:
+            print("PROCESSING: " + str(processing_percentage) + "%")
+
+        total_packages += 1
+        last_processing_percentage = processing_percentage
         file.write(data)
     file.close()
 
+    print("TOTAL NUMBER OF PACKAGES RECEIVED: " + str(total_packages))
+
     print("SEND: FINISHED")
     connection_socket.send('FINISHED'.encode())
+
     file_received = True
 
 except Exception as e:
     print("ERROR WHILE PROCESSING FILE: MAXIMUM SERVER CAPACITY")
 
-
 if file_received:
 
-    #verify integrity with HMAC digest from server
+    # verify integrity with HMAC digest from server
     integrity = connection_socket.recv(64)
     print("RECEIVED: (integrity)")
 

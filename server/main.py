@@ -1,15 +1,18 @@
 import hashlib
 import struct
 import socket
+import atexit
 import time
 import threading
 from os import path, listdir
+from datetime import datetime
+
 from logger import create_logger, write_log, close_log
-import atexit
 
 PORT = 40001
 HOST = "0.0.0.0"
 ADDRESS_TUPLE = (HOST, PORT)
+BUFFER_SIZE = 1024
 
 
 def run_server():
@@ -40,9 +43,11 @@ def run_server():
 
 
 def connect(connection, addr):
-
     logger = create_logger(addr)
     start_time = time.time()
+
+    write_log(logger, "HOST: " + str(addr) + "\n")
+    write_log(logger, "DATE: " + str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + "\n")
 
     try:
 
@@ -54,11 +59,8 @@ def connect(connection, addr):
         if received_message == "CONNECTED":
             thread.connected = True
             connection_message = 'CONNECTED SUCCESFULLY TO ADDRESS {} \n'.format(addr)
-            print("RECEIVED: " + connection_message + "\n")
-            write_log(logger, "RECEIVED: " + connection_message + "\n")
-
-            #while getattr(t, 'send', True):
-            #    continue
+            print(connection_message + "\n")
+            write_log(logger, connection_message + "\n")
 
             print("SEND: " + file_name + " (file name) \n")
             write_log(logger, "SEND: " + file_name + " (file name) \n")
@@ -70,19 +72,25 @@ def connect(connection, addr):
 
             file_size_e = struct.pack('i', file_size)
             connection.send(file_size_e)
-            print("SEND: file size encoded \n")
-            write_log(logger, "SEND: file size encoded \n")
+            print("SEND: " + str(file_size) + "(file size) \n")
+            write_log(logger, "SEND: " + str(file_size) + "(file size) \n")
 
-            line = file.read(1024)
+            total_packages = 0
+            line = file.read(BUFFER_SIZE)
 
             while line:
                 connection.send(line)
-                line = file.read(1024)
+                line = file.read(BUFFER_SIZE)
+                total_packages += 1
+
+            print("TOTAL PACKAGES: " + str(total_packages) + "\n")
+            write_log(logger, "TOTAL PACKAGES: " + str(total_packages) + "\n")
 
             received_message = connection.recv(255).decode()
 
             if received_message != "FINISHED":
                 print("SERVER CAPACITY REACHED! \n")
+                write_log(logger, "SERVER CAPACITY REACHED! \n")
             else:
                 print('FILE SENT\n')
                 write_log(logger, 'FILE SENT \n')
@@ -97,8 +105,8 @@ def connect(connection, addr):
 
                 received_message = connection.recv(255).decode()
 
-                #the incoming message might be "INTEGRITY VERIFIED" or "INTEGRITY ERROR"
-                #depending on the result of the hash digest
+                # the incoming message might be "INTEGRITY VERIFIED" or "INTEGRITY ERROR"
+                # depending on the result of the hash digest
 
                 print("RECEIVED: " + received_message + "\n")
                 write_log(logger, "RECEIVED: " + received_message + "\n")

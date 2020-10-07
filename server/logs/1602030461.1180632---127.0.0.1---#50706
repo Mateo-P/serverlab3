@@ -1,0 +1,10 @@
+RECEIVED: CONNECTED
+RECEIVED: CONNECTED SUCCESFULLY TO ADDRESS ('127.0.0.1', 50706) 
+
+SEND: example.txt (file name) 
+FILE OPENED 
+SEND: 7(file size) 
+FILE SENT 
+RECEIVED: FINISHED
+SEND: HMAC VERIFICATION 
+ERROR'utf-8' codec can't decode byte 0xed in position 19: invalid continuation byte
