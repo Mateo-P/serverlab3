@@ -7,7 +7,7 @@ from os import path
 import atexit
 
 PORT = 40001
-SERVER = "127.0.0.1"
+SERVER = "ec2-3-88-201-63.compute-1.amazonaws.com"
 ADDRESS_TUPLE = (SERVER, PORT)
 BUFFER_SIZE = 1024
 

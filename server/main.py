@@ -49,7 +49,8 @@ def connect(connection, addr):
     start_time = time.time()
 
     write_log(logger, "CLIENT: " + str(addr) + "\n")
-    write_log(logger, "DATE: " + str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + "\n")
+    write_log(logger, "DATE: " +
+              str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + "\n")
 
     try:
 
@@ -61,7 +62,8 @@ def connect(connection, addr):
         if received_message == "CONNECTED":
             thread.connected = True
 
-            connection_message = 'CONNECTED SUCCESFULLY TO ADDRESS {} \n'.format(addr)
+            connection_message = 'CONNECTED SUCCESFULLY TO ADDRESS {} \n'.format(
+                addr)
             print(connection_message + "\n")
             write_log(logger, connection_message + "\n")
 
@@ -76,7 +78,7 @@ def connect(connection, addr):
             file_size_e = struct.pack('i', file_size)
             connection.send(file_size_e)
             print("SEND: " + str(file_size) + "(file size) \n")
-            write_log(logger, "SEND: " + str(file_size) + "(file size) \n")
+            write_log(logger, "SEND: " + str(file_size) + "B (file size) \n")
 
             total_packages = 0
             line = file.read(BUFFER_SIZE)
@@ -87,7 +89,8 @@ def connect(connection, addr):
                 total_packages += 1
 
             print("TOTAL PACKAGES SENT: " + str(total_packages) + "\n")
-            write_log(logger, "TOTAL PACKAGES SENT: " + str(total_packages) + "\n")
+            write_log(logger, "TOTAL PACKAGES SENT: " +
+                      str(total_packages) + "\n")
 
             received_message = connection.recv(255).decode()
 
