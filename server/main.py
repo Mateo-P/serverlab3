@@ -13,17 +13,19 @@ PORT = 40001
 HOST = "0.0.0.0"
 ADDRESS_TUPLE = (HOST, PORT)
 BUFFER_SIZE = 1024
+CLIENT_QNTY = 25
 
 
 def run_server():
-    connection_socket.listen(25)
+    connection_socket.listen(CLIENT_QNTY)
 
     print(f"LISTENING ON HOST: {HOST}")
 
     while True:
         connection, addr = connection_socket.accept()
         connection_socket.setblocking(1)
-        connection_thread = threading.Thread(target=connect, args=(connection, addr))
+        connection_thread = threading.Thread(
+            target=connect, args=(connection, addr))
 
         threads = [connection_thread]
         connection_thread.start()
@@ -46,7 +48,7 @@ def connect(connection, addr):
     logger = create_logger(addr)
     start_time = time.time()
 
-    write_log(logger, "HOST: " + str(addr) + "\n")
+    write_log(logger, "CLIENT: " + str(addr) + "\n")
     write_log(logger, "DATE: " + str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + "\n")
 
     try:
@@ -58,6 +60,7 @@ def connect(connection, addr):
 
         if received_message == "CONNECTED":
             thread.connected = True
+
             connection_message = 'CONNECTED SUCCESFULLY TO ADDRESS {} \n'.format(addr)
             print(connection_message + "\n")
             write_log(logger, connection_message + "\n")
@@ -83,8 +86,8 @@ def connect(connection, addr):
                 line = file.read(BUFFER_SIZE)
                 total_packages += 1
 
-            print("TOTAL PACKAGES: " + str(total_packages) + "\n")
-            write_log(logger, "TOTAL PACKAGES: " + str(total_packages) + "\n")
+            print("TOTAL PACKAGES SENT: " + str(total_packages) + "\n")
+            write_log(logger, "TOTAL PACKAGES SENT: " + str(total_packages) + "\n")
 
             received_message = connection.recv(255).decode()
 
@@ -131,6 +134,7 @@ def connect(connection, addr):
         write_log(logger, 'ERROR' + str(e) + "\n")
         close_log(logger)
         connection.close()
+        run_server()
 
 
 abs_path = path.dirname(path.abspath(__file__))
@@ -147,19 +151,20 @@ def at_exit_cleanup():
 
 try:
 
-    client_quantity = int(input('INGRESAR EL NUMERO MAXIMO DE CLIENTES: '))
-    files = [f for f in listdir(files_address) if path.isfile(path.join(files_address, f))]
+    client_quantity = CLIENT_QNTY
+    files = [f for f in listdir(files_address) if path.isfile(
+        path.join(files_address, f))]
 
     print("ARCHIVOS DISPONIBLES PARA ENVIAR:")
 
     for i in range(len(files)):
-        print("#" + str(i) + ": " + files[i])
+        print("# " + str(i) + "-> " + files[i])
 
     file_name = files[int(input('INGRESAR EL NUMERO DE ARCHIVO: '))]
     file_address = path.join(files_address, file_name)
     file_size = path.getsize(file_address)
 
-    print("TAMANO DEL ARCHIVO: " + str(file_size))
+    print("TAMANO DEL ARCHIVO: " + str(file_size)+" B")
 
     # HMAC VERIFICATION
     hash_md5 = hashlib.md5()

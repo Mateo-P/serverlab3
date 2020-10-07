@@ -1,7 +1,0 @@
-RECEIVED: CONNECTED
-CONNECTED SUCCESFULLY TO ADDRESS ('127.0.0.1', 50797) 
-
-SEND: Grabación de pantalla 2020-09-26 a la(s) 1.30.15 p. m..mov (file name) 
-FILE OPENED 
-SEND: 52337477(file size) 
-ERROR[Errno 32] Broken pipe
