@@ -1,58 +1,24 @@
+# chat server using multicast
+# python fork of the original ruby implementation
+# http://tx.pignata.com/2012/11/multicast-in-ruby-building-a-peer-to-peer-chat-system.html
+# receiver.py
+# usage : $ python receiver.py  # wait for messages to come in
+
 import socket
-import binascii
+import struct
 
-def main():
-  MCAST_GRP = '224.1.1.1' 
-  MCAST_PORT = 5007
-  sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-  try:
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-  except AttributeError:
-    pass
-  sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32) 
-  sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+multicast_addr = '224.0.0.1'
+bind_addr = '0.0.0.0'
+port = 3000
 
-  sock.bind((MCAST_GRP, MCAST_PORT))
-  host = socket.gethostbyname(socket.gethostname())
-  sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton(host))
-  sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, 
-                   socket.inet_aton(MCAST_GRP) + socket.inet_aton(host))
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+membership = socket.inet_aton(multicast_addr) + socket.inet_aton(bind_addr)
 
-  while 1:
-    try:
-      data, addr = sock.recvfrom(1024)
-    except socket.error, e:
-      print 'Expection'
-      hexdata = binascii.hexlify(data)
-      print 'Data = %s' % hexdata
+sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-if __name__ == '__main__':
-  main()
+sock.bind((bind_addr, port))
 
-
-
-  from socket import *
-import sys
-import select
-
-host="0.0.0.0"
-port = 9999
-s = socket(AF_INET,SOCK_DGRAM)
-s.bind((host,port))
-
-addr = (host,port)
-buf=1024
-
-data,addr = s.recvfrom(buf)
-print "Received File:",data.strip()
-f = open(data.strip(),'wb')
-
-data,addr = s.recvfrom(buf)
-try:
-    while(data):
-        f.write(data)
-        s.settimeout(2)
-        data,addr = s.recvfrom(buf)
-except timeout:
-    f.close()
-    s.close()
+while True:
+    message, address = sock.recvfrom(255)
+    print (message)
