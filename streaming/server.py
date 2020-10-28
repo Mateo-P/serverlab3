@@ -8,11 +8,11 @@ IP_HOST = '127.0.0.1'
 PUERTO = 65432
 CANT_MAX_BYTES = 1024
 ULTIMO_PUERTO = 65525
-PRIMER_PUERTO = 49152
+PRIMER_PUERTO = 49150
 
 ultima_ipmulticast = '224.3.0.0'
-ultimo_puertomulticast = 49152
-RUTA_VIDEO = '/Users/valentinaduarteb/Documents/Trabajos/Streaming/Videos/'
+ultimo_puertomulticast = 49150
+RUTA_VIDEO = 'streaming/videos/'
 formato_nombre_archivo = 'video${}.mp4'
 nombre_archivo_actual = 0
 
