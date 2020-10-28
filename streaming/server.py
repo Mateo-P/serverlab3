@@ -3,6 +3,7 @@ import struct
 import threading
 import time
 import cv2
+from os import path
 
 IP_HOST = '127.0.0.1'
 PUERTO = 65432
@@ -12,9 +13,14 @@ PRIMER_PUERTO = 49150
 
 ultima_ipmulticast = '224.3.0.0'
 ultimo_puertomulticast = 49150
-RUTA_VIDEO = 'streaming/videos/'
-formato_nombre_archivo = 'video${}.mp4'
+abs_path = path.dirname(path.abspath(__file__))
+files_address = path.join(abs_path, 'videos')
+
+RUTA_VIDEO = 'videos'
+formato_nombre_archivo = 'video0.mp4'
+video_address = path.join(files_address, formato_nombre_archivo)
 nombre_archivo_actual = 0
+print(video_address)
 
 
 def nuevo_grupo_mc():
@@ -61,7 +67,7 @@ def stream (sock, multicast_group, filename):
 def ejecucion (conn, addr):
     global formato_nombre_archivo, nombre_archivo_actual
     data = conn.recv(CANT_MAX_BYTES)
-    path = RUTA_VIDEO+formato_nombre_archivo.replace('${}', str(nombre_archivo_actual))
+    path = video_address
     print(str(path))
     nombre_archivo_actual += 1
     a = open(path, 'wb')
@@ -71,9 +77,9 @@ def ejecucion (conn, addr):
     conn.close()
     iniciar_conexion(path, nuevo_grupo_mc())
 
-tcp_soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-tcp_soc.bind((IP_HOST, PUERTO))
-tcp_soc.listen()
+udp_soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+udp_soc.bind((IP_HOST, PUERTO))
+udp_soc.listen()
 while True:
-    conn, addr = tcp_soc.accept()
-    threading.Thread(target = ejecucion , args = (conn,addr)).start()
+    conn, addr = udp_soc.accept()
+    threading.Thread(target = ejecucion , args = (conn,addr)).start()   

@@ -31,8 +31,8 @@ def mostrar_video (data):
         run = run + 1
 
 while True:
-    while (run % 2) == 0:
-        global data
+    global data
+    while (run % 2) == 0:  
         data, address = sock.recvfrom(65535)
         mostrar_video(data)
 
